@@ -1,4 +1,4 @@
-/*global NegativeThought, removeByIndex */
+/* global NegativeThought, removeByIndex, randomFromArray */
 
 /* Brain Constructor
 *
@@ -53,8 +53,21 @@ Brain.prototype.removeNegativeThought = function( negThoughtIndex )
 Brain.prototype.randomRebuttal = function()
 {
     //choose a random negative thought in neg thoughts array
+    var randomNegThought = randomFromArray( this.negativeThoughts );
+
     //then choose a  random rebuttal from neg thought
-    //if one doesn't exist try another random neg thought
+    //if one doesn't exist try another random neg thought by calling
+    //randomRebuttal again
+    if ( randomNegThought.rebuttals.length !== 0 )
+    {
+        var random = randomFromArray( randomNegThought.rebuttals ).thought;
+
+        return random;
+    }
+    else
+    {
+        return this.randomRebuttal();
+    }
 };
 
 
@@ -75,22 +88,25 @@ Brain.prototype.negThoughtCount = function()
 * Method returns the total number of rebuttals for all negative thoughts inside
 * a Brain.
 *
-* return void
+* return integer
 */
 Brain.prototype.rebuttalCount = function()
 {
-    //reduce each negative thought to its rebuttal length and sum them
+    return this.negativeThoughts.reduce( function( a, b )
+    {
+        return a + b.rebuttals.length;
+    }, 0 );
 };
 
 
 /* Thoughts By Tag
 *
-* Method returns all thought properties of a negatives thoughts in a brain that
-* contain the specified tag.
+* Method returns an array of negatives thoughts in a brain that contain the
+* specified tag.
 *
 * @param    string      tag         tag to search for
 *
-* return void
+* return array
 */
 Brain.prototype.thoughtsByTag = function( tag )
 {

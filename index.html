@@ -1,9 +1,24 @@
 <!DOCTYPE HTML>
 <html>
     <head>
+        <script src="helpers.js"></script>
         <script src="thoughts.js"></script>
         <script src="brain.js"></script>
     </head>
     <body>
+    <script>
+        var brain = new Brain();
+        brain.addNegativeThought('neg thought 0');
+        brain.addNegativeThought('neg thought 1');
+        brain.negativeThoughts[0].addRebuttal('rebuttal for 0');
+        brain.negativeThoughts[0].addRebuttal('another rebuttal for 0');
+        brain.negativeThoughts[1].addRebuttal('rebuttal for 1');
+        brain.negativeThoughts[0].addTags('test, other');
+        brain.addNegativeThought('neg thought 3');
+        brain.negativeThoughts[1].addTags('test');
+        brain.negativeThoughts[2].addTags('other');
+
+
+    </script>
     </body>
 </html>

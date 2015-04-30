@@ -14,3 +14,9 @@ var xDaysAgo = function( x )
 
     return new Date( xDaysAgo );
 };
+
+
+var randomFromArray = function( arr )
+{
+    return arr[Math.floor( Math.random() * arr.length )];
+};
