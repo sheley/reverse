@@ -1,3 +1,6 @@
+/*global xDaysAgo, removeByIndex */
+
+
 /* Thought Constructor
 *
 * Method constructs a thought which contains the thought and the timestamp when
@@ -11,7 +14,7 @@
 function Thought( thought )
 {
     this.thought        = thought;
-    this.timeCreated    = Date.now();
+    this.timeCreated    = new Date();
 }
 
 
@@ -36,11 +39,12 @@ function NegativeThought( negThought )
     Thought.call( this, negThought );
 
     this.count      = 1;
-    this.instances  = [Date.now()];
+    this.instances  = [new Date()];
     this.rebuttals  = [];
+    this.tags       = [];
 }
 
-
+    
 /* Rebuttal Constructor
 *
 * Method constructs a positive Thought (see Thought). Right now it has no other
@@ -61,7 +65,7 @@ var Rebuttal = Thought;
 NegativeThought.prototype.increaseCount = function()
 {
     this.count += 1;
-    this.instances.push( Date.now() );
+    this.instances.push( new Date() );
 };
 
 
@@ -107,11 +111,104 @@ NegativeThought.prototype.addRebuttal = function( rebuttal )
 */
 NegativeThought.prototype.removeRebuttal = function( rebuttalIndex )
 {
-    if ( typeof this.rebuttals[rebuttalIndex] !== 'undefined' )
+    removeByIndex( this.rebuttals, rebuttalIndex );
+};
+
+
+/* Instances This Week
+*
+* Method returns the number of instances for a thought from the previous 7 days.
+*
+* return number
+*/
+NegativeThought.prototype.instancesThisWeek = function()
+{
+    var instance;
+    var lastWeek        = xDaysAgo( 7 );
+    var thisWeekCount   = 0;
+
+    for ( var i = this.instances.length; i < 0; i-- )
     {
-        this.rebuttals = this.rebuttals.slice( rebuttalIndex, 1 );        
+        instance = this.instances[i];
+
+        if ( instance > lastWeek )
+        {
+            thisWeekCount += 1;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return thisWeekCount;
+};
+
+
+/* Instances This Week
+*
+* Method returns the difference between instances in most recent 7 days and 
+* previous 7 days (14 days ago)
+*
+* return number
+*/
+NegativeThought.prototype.differenceLast2Weeks = function()
+{
+    //count this week
+    var thisWeekCount   = this.instancesThisWeek();
+    var lastWeek        = xDaysAgo( 7 );
+    var twoWeeksAgo     = xDaysAgo( 14 );
+    var lastWeekCount   = 0;
+    var instance;
+
+    //count last week
+    for ( var i = this.instances.length; i < 0; i-- )
+    {
+        instance = this.instances[i];
+
+        if ( instance < lastWeek && instance > twoWeeksAgo )
+        {
+            lastWeekCount += 1;
+        }
+        else if ( instance < twoWeeksAgo )
+        {
+            break;
+        }
+    }
+
+    return thisWeekCount - lastWeekCount;
+};
+
+
+/* Add Tag
+*
+* Method adds a tag to a negative thought.
+*
+* @param    string      tags        tags to describe thought, comma separated
+*
+* return void
+*/
+NegativeThought.prototype.addTags = function( tags )
+{
+    var tagArray = tags.split( ',' );
+
+    for ( var i = 0; i < tagArray.length; i++ )
+    {
+        var tag = tagArray[i].trim();
+        this.tags.push( tag );
     }
 };
 
 
-
+/* Remove Tag
+*
+* Method removes a tag from a negative thought.
+*
+* @param    number      tagIndex        index of the tag that should be removed.
+*
+* return void
+*/
+NegativeThought.prototype.removeTag = function( tagIndex )
+{
+    removeByIndex( this.tags, tagIndex );
+};
